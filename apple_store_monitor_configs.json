@@ -1,44 +1,22 @@
 {
   "selected_products": {
-    "MGYJ3CH/A": [
-      "AirPods Max",
-      "AirPods Max - 银色"
-    ],
-    "MLHG3CH/A": [
-      "iPhone 13 Pro Max",
-      "512GB 远峰蓝色"
+    "MU2W3CH/A": [
+      "iPhone 15 Pro Max",
+      "512GB 蓝色"
     ]
   },
-  "selected_area": "上海 上海 黄浦区",
+  "selected_area": "天津 天津 河西区",
   "exclude_stores": [
-    "R688",
-    "R574",
-    "R531",
-    "R532",
-    "R471"
+    "R648",
+    "R609",
+    "R478",
+    "R557"
   ],
   "notification_configs": {
-    "dingtalk": {
-      "access_token": "",
-      "secret_key": ""
-    },
-    "telegram": {
-      "chat_id": "",
-      "bot_token": "",
-      "http_proxy": ""
-    },
-    "bark": {
-      "url": "",
-      "query_parameters": {
-        "url": null,
-        "isArchive": null,
-        "group": null,
-        "icon": null,
-        "automaticallyCopy": null,
-        "copy": null
-      }
+    "pushdeer": {
+      "access_key": ""
     }
   },
-  "scan_interval": 30,
-  "alert_exception": false
+  "scan_interval": 10,
+  "alert_exception": true
 }

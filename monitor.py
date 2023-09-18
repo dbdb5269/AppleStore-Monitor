@@ -41,76 +41,22 @@ class Utils:
                 Utils.log(err)
 
         # DingTalk message
-        invoke(Utils.send_dingtalk_message, notification_configs["dingtalk"])
+        invoke(Utils.send_pushdeer_message, notification_configs["pushdeer"])
 
-        # Bark message
-        invoke(Utils.send_bark_message, notification_configs["bark"])
-
-        # Telegram message
-        invoke(Utils.send_telegram_message, notification_configs["telegram"])
 
     @staticmethod
-    def send_dingtalk_message(dingtalk_configs, message, **kwargs):
-        if len(dingtalk_configs["access_token"]) == 0 or len(dingtalk_configs["secret_key"]) == 0:
+    def send_pushdeer_message(pushdeer_configs, message, **kwargs):
+
+        if len(pushdeer_configs["access_key"]) == 0:
             return
+        __SendKey=pushdeer_configs["access_key"]
+        url = "https://api2.pushdeer.com/message/push?pushkey=" + __SendKey + "&text=" + message
 
-        timestamp = str(round(time.time() * 1000))
-        secret_enc = dingtalk_configs["secret_key"].encode('utf-8')
-        string_to_sign = '{}\n{}'.format(timestamp, dingtalk_configs["secret_key"])
-        string_to_sign_enc = string_to_sign.encode('utf-8')
-        hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
-        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+        payload = {}
+        headers = {}
 
-        headers = {
-            'Content-Type': 'application/json'
-        }
-
-        params = {
-            "access_token": dingtalk_configs["access_token"],
-            "timestamp": timestamp,
-            "sign": sign
-        }
-
-        content = {
-            "msgtype": "text" if "message_type" not in kwargs else kwargs["message_type"],
-            "text": {
-                "content": message
-            }
-        }
-
-        response = requests.post("https://oapi.dingtalk.com/robot/send", headers=headers, params=params, json=content)
-        Utils.log("Dingtalk发送消息状态码：{}".format(response.status_code))
-
-    @staticmethod
-    def send_telegram_message(telegram_configs, message, **kwargs):
-        if len(telegram_configs["bot_token"]) == 0 or len(telegram_configs["chat_id"]) == 0:
-            return
-
-        headers = {
-            'Content-Type': 'application/json'
-        }
-
-        proxies = {
-            "https": telegram_configs["http_proxy"],
-        }
-
-        content = {
-            "chat_id": telegram_configs["chat_id"],
-            "text": message
-        }
-
-        url = "https://api.telegram.org/bot{}/sendMessage".format(telegram_configs["bot_token"])
-        response = requests.post(url, headers=headers, proxies=proxies, json=content)
-        Utils.log("Telegram发送消息状态码：{}".format(response.status_code))
-
-    @staticmethod
-    def send_bark_message(bark_configs, message, **kwargs):
-        if len(bark_configs["url"]) == 0:
-            return
-
-        url = "{}/{}".format(bark_configs["url"].strip("/"), urllib.parse.quote(message, safe=""))
-        response = requests.post(url, params=bark_configs["query_parameters"])
-        Utils.log("Bark发送消息状态码：{}".format(response.status_code))
+        response = requests.request("POST", url, headers=headers, data=payload)
+        Utils.log("Pushdeer发送消息状态码：{}".format(response.status_code))
 
 
 class AppleStoreMonitor:
@@ -139,25 +85,8 @@ class AppleStoreMonitor:
             "selected_area": "",
             "exclude_stores": [],
             "notification_configs": {
-                "dingtalk": {
-                    "access_token": "",
-                    "secret_key": ""
-                },
-                "telegram": {
-                    "bot_token": "",
-                    "chat_id": "",
-                    "http_proxy": ""
-                },
-                "bark": {
-                    "url": "",
-                    "query_parameters": {
-                        "url": None,
-                        "isArchive": None,
-                        "group": None,
-                        "icon": None,
-                        "automaticallyCopy": None,
-                        "copy": None
-                    }
+                "pushdeer": {
+                    "access_key": ""
                 }
             },
             "scan_interval": 30,
@@ -242,30 +171,13 @@ class AppleStoreMonitor:
         notification_configs = configs["notification_configs"]
 
         # config dingtalk notification
-        dingtalk_access_token = input('输入钉钉机器人Access Token[如不配置直接回车即可]：')
-        dingtalk_secret_key = input('输入钉钉机器人Secret Key[如不配置直接回车即可]：')
+        pushdeer_access_key = input('输入pushdeer推送 Access Key[如不配置直接回车即可]：')
 
-        # write dingtalk configs
-        notification_configs["dingtalk"]["access_token"] = dingtalk_access_token
-        notification_configs["dingtalk"]["secret_key"] = dingtalk_secret_key
 
-        # config telegram notification
-        print('--------------------')
-        telegram_chat_id = input('输入Telegram机器人Chat ID[如不配置直接回车即可]：')
-        telegram_bot_token = input('输入Telegram机器人Token[如不配置直接回车即可]：')
-        telegram_http_proxy = input('输入Telegram HTTP代理地址[如不配置直接回车即可]：')
+        # write pushdeer configs
+        notification_configs["pushdeer"]["access_key"] = pushdeer_access_key
 
-        # write telegram configs
-        notification_configs["telegram"]["chat_id"] = telegram_chat_id
-        notification_configs["telegram"]["bot_token"] = telegram_bot_token
-        notification_configs["telegram"]["http_proxy"] = telegram_http_proxy
 
-        # config bark notification
-        print('--------------------')
-        bark_url = input('输入Bark URL[如不配置直接回车即可]：')
-
-        # write dingtalk configs
-        notification_configs["bark"]["url"] = bark_url
 
         # 输入扫描间隔时间
         print('--------------------')
@@ -298,7 +210,7 @@ class AppleStoreMonitor:
         message = "准备开始监测，商品信息如下：\n{}\n取货区域：{}\n扫描频次：{}秒/次".format("\n".join(products_info), selected_area,
                                                                    scan_interval)
         Utils.log(message)
-        Utils.send_message(notification_configs, message)
+        # Utils.send_message(notification_configs, message)
 
         params = {
             "location": selected_area,
