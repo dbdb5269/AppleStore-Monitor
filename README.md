@@ -27,11 +27,11 @@ pip install -r requirements.txt
 
 【强烈建议配置】如不配置则没有通知功能。
 
-本监控提供了pushdeer监控的功能，可以在监控到有货源时将消息发送到钉钉群。如要启用该功能，首先需要创建一个钉钉群，并添加群机器人，详细可参考文档：
+本监控提供了pushdeer监控的功能，可以在监控到有货源时将消息通过Pushdeer进行推送。如要启用该功能，首先需要注册安装pushdeer，详细可参考文档：
 
 [pushdeer接入](https://www.pushdeer.com/)
 
-机器人配置完毕后，记下相关的Access Key，后面配置时需要用到。
+配置完毕后，记下相关的Access Key，后面配置时需要用到。
 
 
 # 开始配置
